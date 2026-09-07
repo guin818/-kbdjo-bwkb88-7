@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Voca 10000 Master</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Malgun Gothic', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            box-sizing: border-box;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 680px;
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        header h1 {
+            font-size: 24px;
+            margin: 0 0 10px 0;
+            color: var(--primary);
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        select, button {
+            font-family: inherit;
+        }
+
+        .select-lesson {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background-color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .tab-buttons {
+            display: flex;
+            background: var(--bg-color);
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            font-weight: bold;
+            font-size: 14px;
+            color: var(--text-sub);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: #fff;
+            color: var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .progress-box {
+            margin-bottom: 20px;
+        }
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+        }
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background-color: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--success);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .section { display: none; }
+        .section.active { display: block; }
+
+        .table-responsive {
+            width: 100%;
+            max-height: 450px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+        th, td {
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            background-color: #f1f5f9;
+            color: var(--text-main);
+            font-weight: bold;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        td:nth-child(1) { text-align: center; color: var(--text-sub); width: 30px; }
+        td:nth-child(2) { text-align: center; width: 35px; }
+        td:nth-child(3) { font-weight: bold; color: var(--primary); width: 95px; }
+        td:nth-child(4) { color: var(--danger); width: 95px; }
+        td:nth-child(6) { text-align: center; width: 50px; }
+
+        .audio-sm-btn {
+            background: #e0e7ff;
+            color: var(--primary);
+            border: none;
+            padding: 5px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .audio-sm-btn:hover { background: #c7d2fe; }
+
+        tr.checked-row {
+            background-color: #f0fdf4;
+            color: #94a3b8;
+            text-decoration: line-through;
+        }
+        tr.checked-row td:nth-child(3), tr.checked-row td:nth-child(4) {
+            color: #94a3b8;
+        }
+
+        .quiz-card {
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .quiz-counter {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-sub);
+        }
+        
+        .main-audio-btn {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 22px;
+            border-radius: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            transition: background 0.2s;
+        }
+        .main-audio-btn:hover { background-color: #2563eb; }
+        
+        .answer-reveal-box {
+            display: none;
+            background: #fff5f5;
+            border: 1px solid #fed7d7;
+            padding: 15px;
+            border-radius: 12px;
+            color: #c53030;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .btn-action {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+            transition: background 0.2s;
+        }
+        .btn-action:hover { background-color: #059669; }
+
+        .quiz-nav {
+            display: flex;
+            gap: 12px;
+        }
+        .quiz-nav button {
+            flex: 1;
+            padding: 16px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: #1e293b;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(30, 41, 59, 0.2);
+        }
+        .quiz-nav button:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+
+        .footer-action {
+            margin-top: 15px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .btn-reset {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-reset:hover { background: #fff5f5; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <h1>🚀 Voca 10000 Master</h1>
+        <div class="controls-row">
+            <select id="lessonSelect" class="select-lesson" onchange="changeLesson()">
+                <option value="1">Lesson 1 (20 words)</option>
+                <option value="2">Lesson 2 (20 words)</option>
+                <option value="3" selected>Lesson 3 (20 words)</option>
+            </select>
+        </div>
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('list')">📖 단어장 표</button>
+            <button class="tab-btn" onclick="switchTab('quiz')">🎯 데피니션 퀴즈</button>
+        </div>
+    </header>
+
+    <div class="progress-box">
+        <div class="progress-info">
+            <span id="progressLabel">암기 완료: 0 / 20</span>
+            <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+            <div id="progressBarFill" class="progress-bar-fill"></div>
+        </div>
+    </div>
+
+    <!-- 단어장 표 모드 -->
+    <div id="listSection" class="section active">
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>체크</th>
+                        <th>단어</th>
+                        <th>뜻</th>
+                        <th>데피니션</th>
+                        <th>음성</th>
+                    </tr>
+                </thead>
+                <tbody id="wordTableBody"></tbody>
+            </table>
+        </div>
+        <div class="footer-action">
+            <button class="btn-reset" onclick="resetCurrentChecks()">현재 Lesson 체크 초기화</button>
+        </div>
+    </div>
+
+    <!-- 데피니션 퀴즈 모드 (오리지널 레이아웃 복원) -->
+    <div id="quizSection" class="section">
+        <div class="quiz-card">
+            <div class="quiz-counter" id="quizCounter">11 / 20</div>
+            
+            <button class="main-audio-btn" onclick="speakCurrentQuiz()">🔊 데피니션 듣기</button>
+
+            <div class="answer-reveal-box" id="quizAnswerBox">
+                <div id="quizWordText">단어</div>
+                <div id="quizMeanText" style="font-size: 14px; margin-top: 4px; font-weight: normal;">뜻</div>
+            </div>
+
+            <button class="btn-action" id="quizControlBtn" onclick="handleQuizAction()">정답 보기</button>
+
+            <div class="quiz-nav">
+                <button id="prevQuizBtn" onclick="moveQuiz(-1)">이전</button>
+                <button id="nextQuizBtn" onclick="moveQuiz(1)">다음</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const vocaData = {
+        "1": [
+            { word: "guardian", mean: "보호자", desc: "a person who is legally responsible for a child; a person who takes care of someone" },
+            { word: "thickness", mean: "두께, 굵기", desc: "how deep an object is" },
+            { word: "bloody", mean: "피투성이의", desc: "stained or covered with blood" },
+            { word: "eastward", mean: "동쪽의", desc: "towards the east" },
+            { word: "reject", mean: "거절(거부)하다", desc: "to refuse to accept something" },
+            { word: "prevent", mean: "예방하다, 막다", desc: "to keep or stop from going or happening" },
+            { word: "several", mean: "몇몇의", desc: "more than a few, but not a great number" },
+            { word: "row", mean: "열, 줄", desc: "an arrangement of people side by side in a line" },
+            { word: "demonstration", mean: "설명, 시연", desc: "explaining something by showing an example of it" },
+            { word: "caterpillar", mean: "애벌레", desc: "a small hairy animal with a long body and many legs, which turns into a moth or butterfly" },
+            { word: "plentiful", mean: "많은, 풍부한", desc: "existing in a large number or quantity" },
+            { word: "childish", mean: "어린아이 같은", desc: "indicating a lack of development" },
+            { word: "confusion", mean: "혼란, 혼동", desc: "the state of not being able to think clearly" },
+            { word: "vote", mean: "투표, 투표하다", desc: "a formal choice made in an election, meeting or referendum" },
+            { word: "elect", mean: "선출하다", desc: "to choose a thing or person by voting" },
+            { word: "wit", mean: "기지, 재치", desc: "the ability to use words in a clever and amusing way" },
+            { word: "disloyal", mean: "불충실한", desc: "not living up to the trust of your friends, work mates or country" },
+            { word: "pace", mean: "속도", desc: "the rate of moving, walking or running" },
+            { word: "fluent", mean: "유창한, 능숙한", desc: "able to speak or write a foreign language easily and accurately" },
+            { word: "abroad", mean: "해외로", desc: "in another country or countries; overseas" }
+        ],
+        "2": [
+            { word: "knowledge", mean: "지식", desc: "The mental result of learning" },
+            { word: "essentially", mean: "근본적으로", desc: "basically" },
+            { word: "advise", mean: "조언하다", desc: "to tell someone what you think they should do" },
+            { word: "doubt", mean: "의심하다", desc: "to think that something is unlikely" },
+            { word: "composer", mean: "작곡가", desc: "a person who writes music" },
+            { word: "prove", mean: "증명하다", desc: "to use facts and evidence to show that something is true" },
+            { word: "furnish", mean: "비치하다", desc: "to put furniture in a room, house, etc." },
+            { word: "worship", mean: "예배하다", desc: "to pray to and show respect for God or another revered thing or being" },
+            { word: "unexpected", mean: "예기치 않은", desc: "not expected or anticipated" },
+            { word: "protection", mean: "보호", desc: "the act of keeping something safe so that it is not damaged" },
+            { word: "insert", mean: "끼우다, 넣다", desc: "to put a smaller thing into something bigger; to put a thing into something" },
+            { word: "creature", mean: "생물, 존재", desc: "something which has been created" },
+            { word: "opposed", mean: "반대하는", desc: "in opposition to something" },
+            { word: "abroad", mean: "해외로", desc: "in another country or countries; overseas" },
+            { word: "instruct", mean: "가르치다", desc: "to teach skills or knowledge to students" },
+            { word: "positive", mean: "긍정적인", desc: "thinking or talking mainly about the good things in a situation; feel hopeful and confident" },
+            { word: "rumour", mean: "소문", desc: "informal news or information that is possibly not true" },
+            { word: "claw", mean: "할퀴다, 벗어나다", desc: "1. to scratch or tear something with claws 2. to escape by means of your hands" },
+            { word: "involve", mean: "포함하다", desc: "to concern closely or include; to engage as a participant" },
+            { word: "notice", mean: "알아차리다", desc: "to see something for the first time" }
+        ],
+        "3": [
+            { word: "stool", mean: "등받이 없는 의자", desc: "a seat that does not have a back or arms" },
+            { word: "force", mean: "군대, 힘", desc: "a unit that is part of some military service" },
+            { word: "erect", mean: "똑바로 선", desc: "upright in position or posture" },
+            { word: "accept", mean: "받아들이다", desc: "to take or receive something that someone offers you" },
+            { word: "occupation", mean: "직업", desc: "a principal job in your life that you do to earn money" },
+            { word: "dare", mean: "~할 용기가 있다", desc: "to have enough courage to do or say something" },
+            { word: "influence", mean: "영향", desc: "a power to affect people or events" },
+            { word: "noble", mean: "고귀한", desc: "having high moral qualities" },
+            { word: "support", mean: "지지하다", desc: "to help someone by saying that you agree with him or her" },
+            { word: "apologize", mean: "사과하다", desc: "to admit a mistake and express regret for it" },
+            { word: "candidate", mean: "후보자", desc: "someone who wants to be hired or elected to a special position" },
+            { word: "chemical", mean: "화학 물질", desc: "a substance that is used or produced in a chemical process" },
+            { word: "air force", mean: "공군", desc: "a country's armed force that fights in the air using aircraft" },
+            { word: "express", mean: "표현하다", desc: "to communicate an idea or opinion; to give some sort of opinion" },
+            { word: "target", mean: "목표, 표적", desc: "something aimed or fired at" },
+            { word: "suitable", mean: "적절한", desc: "correct or proper for the particular purpose" },
+            { word: "patient", mean: "환자", desc: "a person who requires medical care" },
+            { word: "proper", mean: "적절한", desc: "marked by suitability or rightness" },
+            { word: "summit", mean: "정상", desc: "the highest point of a mountain or hill" },
+            { word: "delight", mean: "기쁨", desc: "extreme happiness" }
+        ]
+    };
+
+    let currentLesson = "3";
+    let currentTab = "list";
+    let quizIndex = 0;
+    let isAnswerRevealed = false;
+
+    function speakText(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.85;
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    function switchTab(tabName) {
+        currentTab = tabName;
+        document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+            btn.classList.toggle('active', (idx === 0 && tabName === 'list') || (idx === 1 && tabName === 'quiz'));
+        });
+        document.getElementById('listSection').classList.toggle('active', tabName === 'list');
+        document.getElementById('quizSection').classList.toggle('active', tabName === 'quiz');
+
+        if (tabName === 'quiz') {
+            initQuizState();
+        }
+    }
+
+    function changeLesson() {
+        currentLesson = document.getElementById('lessonSelect').value;
+        quizIndex = 0;
+        loadListUI();
+        if (currentTab === 'quiz') {
+            initQuizState();
+        }
+    }
+
+    function getStorageKey() {
+        return `voca_master_lesson_${currentLesson}_checks`;
+    }
+
+    function loadListUI() {
+        const words = vocaData[currentLesson];
+        const tbody = document.getElementById('wordTableBody');
+        tbody.innerHTML = '';
+
+        let savedChecks = JSON.parse(localStorage.getItem(getStorageKey())) || {};
+        let checkedCount = 0;
+
+        words.forEach((item, index) => {
+            const isChecked = savedChecks[index] || false;
+            if (isChecked) checkedCount++;
+
+            const row = document.createElement('tr');
+            if (isChecked) row.classList.add('checked-row');
+
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td><input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleCheck(${index}, this)"></td>
+                <td>${item.word}</td>
+                <td>${item.mean}</td>
+                <td>${item.desc}</td>
+                <td><button class="audio-sm-btn" onclick="speakText('${item.desc.replace(/'/g, "\\'")}')">🔊 듣기</button></td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        updateProgress(checkedCount, words.length);
+    }
+
+    function toggleCheck(index, checkbox) {
+        let savedChecks = JSON.parse(localStorage.getItem(getStorageKey())) || {};
+        const row = checkbox.closest('tr');
+
+        if (checkbox.checked) {
+            savedChecks[index] = true;
+            row.classList.add('checked-row');
+        } else {
+            delete savedChecks[index];
+            row.classList.remove('checked-row');
+        }
+
+        localStorage.setItem(getStorageKey(), JSON.stringify(savedChecks));
+
+        let checkedCount = Object.keys(savedChecks).length;
+        updateProgress(checkedCount, vocaData[currentLesson].length);
+    }
+
+    function updateProgress(count, total) {
+        const percent = Math.round((count / total) * 100);
+        document.getElementById('progressLabel').innerText = `암기 완료: ${count} / ${total}`;
+        document.getElementById('progressPercent').innerText = `${percent}%`;
+        document.getElementById('progressBarFill').style.width = `${percent}%`;
+    }
+
+    function resetCurrentChecks() {
+        if (confirm(`Lesson ${currentLesson}의 암기 체크 기록을 초기화하시겠습니까?`)) {
+            localStorage.removeItem(getStorageKey());
+            loadListUI();
+        }
+    }
+
+    function initQuizState() {
+        quizIndex = 0;
+        renderQuiz();
+    }
+
+    function renderQuiz() {
+        const words = vocaData[currentLesson];
+        const current = words[quizIndex];
+
+        document.getElementById('quizCounter').innerText = `${quizIndex + 1} / ${words.length}`;
+        document.getElementById('quizWordText').innerText = `✨ ${current.word}`;
+        document.getElementById('quizMeanText').innerText = `뜻: ${current.mean}`;
+
+        isAnswerRevealed = false;
+        document.getElementById('quizAnswerBox').style.display = 'none';
+        
+        const actionBtn = document.getElementById('quizControlBtn');
+        actionBtn.innerText = "정답 보기";
+
+        document.getElementById('prevQuizBtn').disabled = (quizIndex === 0);
+        document.getElementById('nextQuizBtn').disabled = (quizIndex === words.length - 1);
+    }
+
+    function speakCurrentQuiz() {
+        const current = vocaData[currentLesson][quizIndex];
+        speakText(current.desc);
+    }
+
+    function handleQuizAction() {
+        const answerBox = document.getElementById('quizAnswerBox');
+        const actionBtn = document.getElementById('quizControlBtn');
+        const words = vocaData[currentLesson];
+
+        if (!isAnswerRevealed) {
+            answerBox.style.display = 'block';
+            actionBtn.innerText = "다음 문제로 넘어가기 ➔";
+            isAnswerRevealed = true;
+            speakText(words[quizIndex].word);
+        } else {
+            if (quizIndex < words.length - 1) {
+                quizIndex++;
+                renderQuiz();
+            } else {
+                alert("🎉 이번 Lesson의 모든 퀴즈를 완료했습니다!");
+            }
+        }
+    }
+
+    function moveQuiz(direction) {
+        const words = vocaData[currentLesson];
+        const newIndex = quizIndex + direction;
+        if (newIndex >= 0 && newIndex < words.length) {
+            quizIndex = newIndex;
+            renderQuiz();
+        }
+    }
+
+    window.onload = function() {
+        loadListUI();
+    };
+</script>
+
+</body>
+</html>
